@@ -16,8 +16,8 @@ public class Main {
 
                 while(true) {
                     Socket clientSocket = serverSocket.accept();
-                    global.clientes.add(clientSocket);
-                    th[i]=new serverfunciones(clientSocket);
+                    Global.socketclientes.add(clientSocket);
+                    th[i]=new Serverfunciones(clientSocket);
                     th[i].start();
                     i++;
                 }
