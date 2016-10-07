@@ -25,14 +25,12 @@ public class Cliente {
             listen = new Listener(echoSocket,nombre,out,stdIn);
             listen.start();
             System.out.println("Que sala quieres?");
+            String sala=stdIn.readLine();
+            out.println("CONNECT "+sala+" "+nombre);
 
-            out.println("CONNECT "+stdIn.readLine()+" "+nombre);
-           String sala=stdIn.readLine();
-
-            while ((userInput = stdIn.readLine()) != null) {
+            while (true) {
 
                 out.println("TEXT "+sala+" "+stdIn.readLine());
-
             }
         } catch (UnknownHostException e) {
             System.err.println("No conozco la IP : " + hostIP);
@@ -46,4 +44,3 @@ public class Cliente {
 
 
 }
-
