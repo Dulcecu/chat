@@ -122,9 +122,44 @@ public class Serverfunciones extends  Thread {
                 if (Objects.equals("TEXT",commands[0])) {
                     String input=null;
                     int sal = Integer.parseInt(commands[1]);
-                    for (int i = 2; i < commands.length; i++) {
-                       input=(commands[i]+" ");
-                    }
+                    String[] mensaje=inputLine.split("TEXT "+sal);
+                    input=mensaje[1];
+
+                        if(Objects.equals("EXIT",commands[2])){
+                            if(sal==0){
+                                int len=Salas.sala1.size();
+                                for(int j=0;j<len;j++) {
+                                    if(Objects.equals(Salas.sala1.get(j),micliente))
+                                    Salas.sala1.remove(j);
+                                    j=len;
+                                }
+                            }
+                            if(sal==1){
+                                int len=Salas.sala2.size();
+                                for(int j=0;j<len;j++) {
+                                    if(Objects.equals(Salas.sala2.get(j).name,micliente))
+                                        Salas.sala2.remove(j);
+                                    j=len;
+                                }
+                            }
+                            if(sal==2){
+                                int len=Salas.sala3.size();
+                                for(int j=0;j<len;j++) {
+                                    if(Objects.equals(Salas.sala3.get(j).name,micliente))
+                                        Salas.sala3.remove(j);
+                                    j=len;
+                                }
+                            }
+                            if(sal==3){
+                                int len=Salas.sala4.size();
+                                for(int j=0;j<len;j++) {
+                                    if(Objects.equals(Salas.sala4.get(j).name,micliente))
+                                        Salas.sala4.remove(j);
+                                    j=len;
+                                }
+                            }
+
+                        }
                     List<User> misala=null;
                     if (sal==0)
                     {
@@ -155,7 +190,6 @@ public class Serverfunciones extends  Thread {
         }
         catch(Exception e)
             {
-
                 e.printStackTrace();
             }
         }

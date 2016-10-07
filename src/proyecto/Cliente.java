@@ -27,10 +27,15 @@ public class Cliente {
             System.out.println("Que sala quieres?");
             String sala=stdIn.readLine();
             out.println("CONNECT "+sala+" "+nombre);
+            String key=null;
 
             while (true) {
+                key=stdIn.readLine();
+                out.println("TEXT "+sala+" "+key);
 
-                out.println("TEXT "+sala+" "+stdIn.readLine());
+                if(Objects.equals("EXIT",key)){
+                    System.exit(2);
+                }
             }
         } catch (UnknownHostException e) {
             System.err.println("No conozco la IP : " + hostIP);
