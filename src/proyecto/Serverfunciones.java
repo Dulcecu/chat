@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,174 +25,170 @@ public class Serverfunciones extends  Thread {
         this.clientsocket = clientsocket;
 
     }
-
     public void run() {
 
         try {
-
             int id = 0;
-            User micliente = null;
+            User miCliente = null;
             in = new BufferedReader(new InputStreamReader(this.clientsocket.getInputStream()));
             out = new PrintWriter(clientsocket.getOutputStream(), true);
-            out.println("Sala 0: " +Salas.sala1.size() + " Sala 1: " + Salas.sala2.size() + " Sala 2: " + Salas.sala3.size() + " Sala 3: " + Salas.sala4.size());
+            out.println("Sala 0: " + Salas.sala1.size() + " personas  " + " Sala 1: " + Salas.sala2.size() + " personas  " + " Sala 2: " + Salas.sala3.size() + " personas  " + " Sala 3: " + Salas.sala4.size() + " personas");
+
             while ((inputLine = in.readLine()) != null) {
+                String[] mensaje = inputLine.split(" ");
+                int sala = Integer.parseInt(mensaje[1]); //Transformar la parte del mensaje a int
+                if (Objects.equals("CONNECT", mensaje[0])) { //Conectarse a una sala
+                    List<User> usuariosala = null;
 
-                String[] commands = inputLine.split(" ");
-                if (Objects.equals("CONNECT",commands[0])) {
+                    if (sala == 0) {//Sacar la lista de usuarios de la sala
+                        usuariosala = Salas.sala1;
+                    }
+                    if (sala == 1) { //Sacar la lista de usuarios de la sala
+                        usuariosala = Salas.sala2;
+                    }
+                    if (sala == 2) {
+                        usuariosala = Salas.sala3;
+                    }
+                    if (sala == 3) {
+                        usuariosala = Salas.sala4;
+                    }
+                    int leng = usuariosala.size();
 
-                    int i = Integer.parseInt(commands[1]);
-                    List<User> usuariosala=null;
-                    if(i==0)
-                    {
-                        usuariosala=Salas.sala1;
-                    }
-                    if(i==1)
-                    {
-                        usuariosala=Salas.sala2;
-                    }
-                    if(i==2)
-                    {
-                        usuariosala=Salas.sala3;
-                    }
-                    if(i==3)
-                    {
-                        usuariosala=Salas.sala4;
-                    }
-
-                    int len=usuariosala.size();
-
-                    for (int j = 0; j<=len; j++) {
+                    for (int j = 0; j <= leng; j++) {
                         if (j == 4) {
-                            out.println("ERROR Sala " + i + " llena");
-                        }
-                        else {
-                           try {
-
-                               if (Objects.nonNull(usuariosala.get(j))) {
-                                   micliente = new User(j, commands[2], clientsocket);
-                                   usuariosala.add(micliente);
-                                   out.println("OK Connectado correctamente a la sala: " + i);
-                                   j=len;
-
-                               }
-                           }
-                           catch (Exception e)
-                           {
-                               j=len;
-                               micliente = new User(id, commands[2], clientsocket);
-                               usuariosala.add(micliente);
-                               out.println("OK Connectado correctamente a la sala: " + i);
-                           }
+                            out.println("ERROR Sala " + sala + " llena");
+                        } else {
+                            try {
+                                if (Objects.nonNull(usuariosala.get(j))) { //Condicion que dice que haga el if si lo que devuelve no es nulo
+                                    miCliente = new User(j, mensaje[2], clientsocket);
+                                    usuariosala.add(miCliente);
+                                    out.println("OK Conectado a la sala " + sala);
+                                    j = leng;
+                                }
+                            } catch (Exception e) { //Este catch esta porque la primera vez que se añada a alguien se devolvera null en el if
+                                j = leng;
+                                miCliente = new User(id, mensaje[2], clientsocket);
+                                usuariosala.add(miCliente);
+                                out.println("OK Connectado a la sala " + sala);
+                            }
                         }
 
-
                     }
-                    if(i==0)
-                    {
-                        Salas.sala1=usuariosala;
+                    if (sala == 0) { //Volver a meter la lista de usuarios en la sala que toca
+                        Salas.sala1 = usuariosala;
                     }
-                    if(i==1)
-                    {
-                        Salas.sala2=usuariosala;
+                    if (sala == 1) {
+                        Salas.sala2 = usuariosala;
                     }
-                    if(i==2)
-                    {
-                        Salas.sala3=usuariosala;
+                    if (sala == 2) {
+                        Salas.sala3 = usuariosala;
                     }
-                    if(i==3)
-                    {
-                        Salas.sala4=usuariosala;
+                    if (sala == 3) {
+                        Salas.sala4 = usuariosala;
                     }
-
-
                 }
 
-                /*while ((inputLine = in.readLine()) != null) {
-                    inputLine = inputLine.toUpperCase();
-                    for (int i = 0; i < Global.socketclientes.size(); i++) {
-
-                        out = new PrintWriter(Global.socketclientes.get(i).getOutputStream(), true);
-                        if (Global.socketclientes.get(i) != this.clientsocket) {
-                            out.println(inputLine);
-                        }
+                if (Objects.equals("TEXT", mensaje[0])) { //Procesar lo que escribe cierto cliente de una sala
+                    String input = null;
+                    String[] msj = inputLine.split("TEXT " + sala + " "); //Coges del mensaje original lo que va despues de "TEXT sala"
+                    input = msj[1];
+                    List<User> misala = null;
+                    if (sala == 0) {
+                        misala = Salas.sala1;
                     }
-                }*/
-
-                if (Objects.equals("TEXT",commands[0])) {
-                    String input=null;
-                    int sal = Integer.parseInt(commands[1]);
-                    String[] mensaje=inputLine.split("TEXT "+sal);
-                    input=mensaje[1];
-
-                        if(Objects.equals("EXIT",commands[2])){
-                            if(sal==0){
-                                int len=Salas.sala1.size();
-                                for(int j=0;j<len;j++) {
-                                    if(Objects.equals(Salas.sala1.get(j),micliente))
-                                    Salas.sala1.remove(j);
-                                    j=len;
-                                }
-                            }
-                            if(sal==1){
-                                int len=Salas.sala2.size();
-                                for(int j=0;j<len;j++) {
-                                    if(Objects.equals(Salas.sala2.get(j).name,micliente))
-                                        Salas.sala2.remove(j);
-                                    j=len;
-                                }
-                            }
-                            if(sal==2){
-                                int len=Salas.sala3.size();
-                                for(int j=0;j<len;j++) {
-                                    if(Objects.equals(Salas.sala3.get(j).name,micliente))
-                                        Salas.sala3.remove(j);
-                                    j=len;
-                                }
-                            }
-                            if(sal==3){
-                                int len=Salas.sala4.size();
-                                for(int j=0;j<len;j++) {
-                                    if(Objects.equals(Salas.sala4.get(j).name,micliente))
-                                        Salas.sala4.remove(j);
-                                    j=len;
-                                }
-                            }
-
-                        }
-                    List<User> misala=null;
-                    if (sal==0)
-                    {
-                        misala=Salas.sala1;
+                    if (sala == 1) {
+                        misala = Salas.sala2;
                     }
-                    if (sal==1)
-                    {
-                        misala=Salas.sala2;
+                    if (sala == 2) {
+                        misala = Salas.sala3;
                     }
-                    if (sal==2)
-                    {
-                        misala=Salas.sala3;
+                    if (sala == 3) {
+                        misala = Salas.sala4;
                     }
-                    if (sal==3)
-                    {
-                        misala=Salas.sala4;
-                    }
-                    for (int i = 0; i<misala.size(); i++) {
-
+                    for (int i = 0; i < misala.size(); i++) { //Se envia el mensaje a todos los de la sala
                         out = new PrintWriter(misala.get(i).con.getOutputStream(), true);
-
-                        if (misala.get(i).con != this.clientsocket) {
-                            out.println(input);
+                        if (misala.get(i).con != this.clientsocket) { //Menos al que lo ha enviado
+                            out.println(miCliente.name+" : "+input);
                         }
                     }
                 }
+
+                int leng = 0;
+
+                if (Objects.equals("EXIT", mensaje[0])) {
+                    String input = null;
+                    String[] msj = inputLine.split(" "); //Coges del mensaje original lo que va despues de "TEXT sala"
+                    int misala = Integer.parseInt(msj[1]);
+                    if (misala == 0) { //Sacar a alguien de la sala
+                        leng = Salas.sala1.size();
+                        for (int j = 0; j < leng; j++) {
+                            if (Objects.equals(Salas.sala1.get(j).name, msj[2])) {
+                                Salas.sala1.remove(j);
+                                j = leng;
+
+                            }
+                        }
+                    }
+                    if (misala == 1) { //Sacar a alguien de la sala
+                        leng = Salas.sala2.size();
+                        for (int j = 0; j < leng; j++) {
+                            if (Objects.equals(Salas.sala2.get(j).name,  msj[2])) {
+                                Salas.sala2.remove(j);
+                                j = leng;
+                            }
+                        }
+                    }
+                    if (misala == 2) { //Sacar a alguien de la sala
+                        leng = Salas.sala3.size();
+                        for (int j = 0; j < leng; j++) {
+                            if (Objects.equals(Salas.sala3.get(j).name,  msj[2])) {
+                                Salas.sala3.remove(j);
+                                j = leng;
+                            }
+                        }
+                    }
+                    if (misala == 3) { //Sacar a alguien de la sala
+                        leng = Salas.sala4.size();
+                        for (int j = 0; j < leng; j++) {
+                            if (Objects.equals(Salas.sala4.get(j).name,  msj[2])) {
+                                Salas.sala4.remove(j);
+                                j = leng;
+                            }
+                        }
+                    }
+
+
+                    List<User> misala1 = null;
+                    if (misala == 0) {
+                        misala1 = Salas.sala1;
+                    }
+                    if (misala == 1) {
+                        misala1 = Salas.sala2;
+                    }
+                    if (misala == 2) {
+                        misala1 = Salas.sala3;
+                    }
+                    if (misala == 3) {
+                        misala1 = Salas.sala4;
+                    }
+
+                    for (int i = 0; i < misala1.size(); i++) { //Se envia el mensaje a todos los de la sala
+                        out = new PrintWriter(misala1.get(i).con.getOutputStream(), true);
+                        if (misala1.get(i).con != this.clientsocket) { //Menos al que lo ha enviado
+                            out.println(msj[2]+" se ha desconectado!");
+                        }
+                    }
+                }
+
             }
+
         }
-        catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
+}
+
 
 
 

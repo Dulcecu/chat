@@ -17,28 +17,21 @@ public class Listener extends  Thread{
     String nombre;
     PrintWriter out;
 
-    public Listener(Socket clientsocket,String nombre,PrintWriter out,BufferedReader stdIn) {
-        this.clientsocket = clientsocket;
-        this.nombre=nombre;
-        this.out=out;
-        this.stdIn=stdIn;
-    }
+        public Listener(Socket cliente, String nombre, PrintWriter out){
+            this.clientsocket = cliente;
+            this. nombre = nombre;
+            this.out = out;
+        }
+        public void run(){
+            try {
+                in = new BufferedReader(new InputStreamReader(clientsocket.getInputStream()));
+                while ((inputLine = in.readLine()) != null) {
+                    System.out.println(inputLine); //Se muestra lo que es enviado por el servidor
+                }
+            } catch (Exception e) {
 
-    public  void run()
-    {
-        try {
-
-            in =new BufferedReader( new InputStreamReader(clientsocket.getInputStream()));
-            while ((inputLine = in.readLine())!=null) {
-                String[] commands=inputLine.split(" ");
-                System.out.println(inputLine);
-
+                e.printStackTrace();
             }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
+
         }
     }
-
-}
